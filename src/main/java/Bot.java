@@ -1,4 +1,5 @@
 import org.telegram.telegrambots.api.methods.send.SendMessage;
+import org.telegram.telegrambots.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -50,21 +51,35 @@ public class Bot extends TelegramLongPollingBot {
                 e.printStackTrace();
             }*/
        Model model = new Model();
-       Message message = update.getMessage();
+        long chat_id = update.getMessage().getChatId();
+        Message message = update.getMessage();
             if(message!= null && message.hasText()){
                 switch (message.getText()){
-                case "/help":
-                    sendMsg(message, "Чем могу помочь?");
-                            break;
-                case "/setting":
-                    sendMsg(message, "Что настроить?");
-                    break;
-                default:
-                    try{
-                    sendMsg(message, Weather.getWeather(message.getText(), model));}
-                    catch (IOException e){
-                        sendMsg(message, "Город не найден");
+                    case "/button": {
+                        SendPhoto msg = new SendPhoto()
+                                .setChatId(chat_id)
+                                .setPhoto("AgADAgAEqjEbSZ_ZSDhZTtVYkhO31z45DwAEyFEieTk_D-zBvQACAg")
+                                .setCaption("Вот тебе расписание 28-го басика, братишка");
+                        try {
+                            sendPhoto(msg); // Call method to send the photo
+                        } catch (TelegramApiException e) {
+                            e.printStackTrace();
+                        }
+                        break;
                     }
+
+
+                    case "/help":
+                        sendMsg(message, "Пока что, я ничего не умею кроме того как показывать погоду и расписание 28 автобуса" + "\n" +
+                                "Для того чтобы узнать погоду достаточно просто ввести название требуемого города");
+                        break;
+
+                    default:
+                        try {
+                            sendMsg(message, Weather.getWeather(message.getText(), model));
+                        } catch (IOException e) {
+                            sendMsg(message, "Город не найден");
+                        }
 
             }
         }
@@ -82,8 +97,8 @@ public class Bot extends TelegramLongPollingBot {
         List<KeyboardRow> keyboardRowList = new ArrayList<>();
         KeyboardRow keyboardFirstRow = new KeyboardRow();
 
-        keyboardFirstRow.add(new KeyboardButton("/setting"));
         keyboardFirstRow.add(new KeyboardButton("/help"));
+        keyboardFirstRow.add(new KeyboardButton("/button"));
 
         keyboardRowList.add(keyboardFirstRow);
         replyKeyboardMarkup.setKeyboard(keyboardRowList);
@@ -96,11 +111,11 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "myexambot";
+        return "WowItsBot";
     }
 
     @Override
     public String getBotToken() {
-        return "732554726:AAFGbVqP5SlOm2p7fSsh7tPwrsMKXPt1O4o";
+        return "764826776:AAG4K5u-o35WzxJrDGYUrnb3YY9xLL4sJSs";
     }
 }
